@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import type { Product, OrderInfo } from '../types';
 import { STORE_ADDRESS } from '../types';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+
+const CART_TTL = 24 * 60 * 60 * 1000;
 
 export interface CartItem {
   product: Product;
@@ -35,7 +38,7 @@ const initialOrder: OrderInfo = {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { value: items, setValue: setItems } = useLocalStorage<CartItem[]>('cart-items', [], { ttl: CART_TTL });
   const [orderInfo, setOrderInfoState] = useState<OrderInfo>(initialOrder);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -52,11 +55,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, { product, quantity: 1, size }];
     });
     setIsCartOpen(true);
-  }, []);
+  }, [setItems]);
 
   const removeItem = useCallback((productId: string, size: string) => {
     setItems((prev) => prev.filter((i) => !(i.product.id === productId && i.size === size)));
-  }, []);
+  }, [setItems]);
 
   const updateQuantity = useCallback((productId: string, size: string, quantity: number) => {
     if (quantity <= 0) {
@@ -68,14 +71,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         i.product.id === productId && i.size === size ? { ...i, quantity } : i
       )
     );
-  }, []);
+  }, [setItems]);
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const clearCart = useCallback(() => {
     setItems([]);
     setOrderInfoState(initialOrder);
-  }, []);
+  }, [setItems]);
 
   const setOrderInfo = useCallback((info: Partial<OrderInfo>) => {
     setOrderInfoState((prev) => ({ ...prev, ...info }));

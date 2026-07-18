@@ -3,10 +3,10 @@ import { useEffect, type ReactNode } from 'react';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  children: ReactNode;
+  contenido: ReactNode;
 }
 
-export function Modal({ isOpen, onClose, children }: ModalProps) {
+export function Modal({ isOpen, onClose, contenido }: ModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -37,7 +37,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
         onClick={onClose}
       />
       <div className="relative z-10 w-full h-full flex items-center justify-center">
-        {children}
+        {contenido}
       </div>
     </div>
   );

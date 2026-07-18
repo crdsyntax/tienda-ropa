@@ -1,4 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
+interface StoredData<T> {
+  value: T;
+  timestamp: number;
+}
+
+interface UseLocalStorageOptions {
+  ttl?: number;
+}
 
 interface UseLocalStorageReturn<T> {
   value: T;
@@ -6,11 +15,29 @@ interface UseLocalStorageReturn<T> {
   remove: () => void;
 }
 
-export function useLocalStorage<T>(key: string, initialValue: T): UseLocalStorageReturn<T> {
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T,
+  options?: UseLocalStorageOptions
+): UseLocalStorageReturn<T> {
+  const ttl = options?.ttl;
+
   const [value, setValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      if (!item) return initialValue;
+
+      if (ttl !== undefined) {
+        const stored = JSON.parse(item) as StoredData<T>;
+        const elapsed = Date.now() - stored.timestamp;
+        if (elapsed >= ttl) {
+          window.localStorage.removeItem(key);
+          return initialValue;
+        }
+        return stored.value;
+      }
+
+      return JSON.parse(item) as T;
     } catch {
       return initialValue;
     }
@@ -18,16 +45,21 @@ export function useLocalStorage<T>(key: string, initialValue: T): UseLocalStorag
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(key, JSON.stringify(value));
+      if (ttl !== undefined) {
+        const data: StoredData<T> = { value, timestamp: Date.now() };
+        window.localStorage.setItem(key, JSON.stringify(data));
+      } else {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      }
     } catch {
       // Storage full or unavailable
     }
-  }, [key, value]);
+  }, [key, value, ttl]);
 
-  const remove = () => {
+  const remove = useCallback(() => {
     window.localStorage.removeItem(key);
     setValue(initialValue);
-  };
+  }, [key, initialValue]);
 
   return { value, setValue, remove };
 }
