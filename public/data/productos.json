@@ -1,0 +1,238 @@
+{
+  "version": "1.0",
+  "updatedAt": "2026-07-25T12:00:00Z",
+  "products": [
+    {
+      "id": "1",
+      "name": "Camiseta Algodón Premium",
+      "sku": "CAM-001",
+      "description": "Camiseta de algodón 100% orgánico, corte relajado ideal para el día a día. Suave al tacto y durable tras múltiples lavados.",
+      "price": 29.99,
+      "originalPrice": 39.99,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600",
+        "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600",
+        "https://images.unsplash.com/photo-1622445275576-721325763afe?w=600"
+      ],
+      "brand": "UrbanStyle",
+      "category": "Camisetas",
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["Blanco", "Negro", "Gris"],
+      "stock": 45,
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "name": "Pantalón Chino Slim Fit",
+      "sku": "PAN-002",
+      "description": "Pantalón chino de corte slim con acabado lavado suave. Tela stretch para mayor comodidad. Ideal para ocasiones formales y casuales.",
+      "price": 59.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600",
+        "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600",
+        "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=600"
+      ],
+      "brand": "DenimCo",
+      "category": "Pantalones",
+      "sizes": ["30", "32", "34", "36"],
+      "colors": ["Beige", "Negro", "Azul"],
+      "stock": 3,
+      "status": "active"
+    },
+    {
+      "id": "3",
+      "name": "Chaqueta Vaquera Clásica",
+      "sku": "CHQ-003",
+      "description": "Chaqueta vaquera con corte clásico y botones metálicos. Un básico atemporal que combina con cualquier look.",
+      "price": 89.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600",
+        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600",
+        "https://images.unsplash.com/photo-1548624313-0396c75e4b1a?w=600"
+      ],
+      "brand": "DenimCo",
+      "category": "Chaquetas",
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "colors": ["Azul", "Negro"],
+      "stock": 12,
+      "status": "active"
+    },
+    {
+      "id": "4",
+      "name": "Vestido Floral Verano",
+      "sku": "VES-004",
+      "description": "Vestido ligero con estampado floral, perfecto para la temporada de verano. Confeccionado en tela transpirable de alta calidad.",
+      "price": 49.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600",
+        "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600"
+      ],
+      "brand": "FloraMode",
+      "category": "Vestidos",
+      "sizes": ["XS", "S", "M", "L"],
+      "colors": ["Rosa", "Azul", "Verde"],
+      "stock": 20,
+      "status": "active"
+    },
+    {
+      "id": "5",
+      "name": "Sudadera Oversized Premium",
+      "sku": "SUD-005",
+      "description": "Sudadera de algodón franelilla, corte oversized con capucha ajustable y bolsillo frontal tipo canguro.",
+      "price": 44.99,
+      "originalPrice": 59.99,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600",
+        "https://images.unsplash.com/photo-1578768079470-aa178a9f65f0?w=600",
+        "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600"
+      ],
+      "brand": "UrbanStyle",
+      "category": "Sudaderas",
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "colors": ["Gris", "Negro", "Blanco"],
+      "stock": 2,
+      "status": "active"
+    },
+    {
+      "id": "6",
+      "name": "Short Deportivo Performance",
+      "sku": "SHR-006",
+      "description": "Short deportivo con tecnología de secado rápido y bolsillos con cierre. Ideal para entrenamiento y actividades al aire libre.",
+      "price": 24.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=600",
+        "https://images.unsplash.com/photo-1562886889-41e5d808fd72?w=600"
+      ],
+      "brand": "SportFit",
+      "category": "Shorts",
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["Negro", "Gris", "Azul"],
+      "stock": 30,
+      "status": "active"
+    },
+    {
+      "id": "7",
+      "name": "Camiseta Estampada Edición Limitada",
+      "sku": "CAM-007",
+      "description": "Camiseta con estampado exclusivo edición limitada. Diseño único que no encontrarás en ningún otro lado.",
+      "price": 34.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600",
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600"
+      ],
+      "brand": "UrbanStyle",
+      "category": "Camisetas",
+      "sizes": ["S", "M", "L"],
+      "colors": ["Blanco", "Negro"],
+      "stock": 0,
+      "status": "draft"
+    },
+    {
+      "id": "8",
+      "name": "Cinturón Cuero Premium",
+      "sku": "ACC-008",
+      "description": "Cinturón de cuero genuino con hebilla metálica pulida. Ancho de 3.5 cm, ideal para uso diario.",
+      "price": 39.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600",
+        "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?w=600"
+      ],
+      "brand": "CottonShop",
+      "category": "Accesorios",
+      "sizes": ["S", "M", "L"],
+      "colors": ["Negro", "Café"],
+      "stock": 4,
+      "status": "active"
+    },
+    {
+      "id": "9",
+      "name": "Pantalón Cargo Militar",
+      "sku": "PAN-009",
+      "description": "Pantalón cargo con múltiples bolsillos y corte militar. Confeccionado en tela resistente ideal para uso rudo.",
+      "price": 69.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600",
+        "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600"
+      ],
+      "brand": "DenimCo",
+      "category": "Pantalones",
+      "sizes": ["30", "32", "34"],
+      "colors": ["Verde Oliva", "Negro"],
+      "stock": 15,
+      "status": "active"
+    },
+    {
+      "id": "10",
+      "name": "Chamarra Bomber Acolchada",
+      "sku": "CHQ-010",
+      "description": "Chamarra bomber con forro acolchado y cierre frontal. Diseño moderno que te mantiene abrigado con estilo.",
+      "price": 99.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "images": [
+        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600",
+        "https://images.unsplash.com/photo-1548624313-0396c75e4b1a?w=600"
+      ],
+      "brand": "UrbanStyle",
+      "category": "Chaquetas",
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["Verde Oliva", "Negro"],
+      "stock": 8,
+      "status": "draft"
+    }
+  ],
+  "promos": [
+    {
+      "id": "1",
+      "title": "Hasta 40% OFF",
+      "subtitle": "En toda la colección de verano. ¡No te lo pierdas!",
+      "imageUrl": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200",
+      "bgColor": "from-rose-500 to-pink-600",
+      "accentColor": "bg-white text-rose-600",
+      "ctaText": "Ver ofertas"
+    },
+    {
+      "id": "2",
+      "title": "Nueva Colección",
+      "subtitle": "Descubre los últimos estilos en moda urbana.",
+      "imageUrl": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200",
+      "bgColor": "from-violet-500 to-purple-700",
+      "accentColor": "bg-white text-violet-600",
+      "ctaText": "Explorar"
+    },
+    {
+      "id": "3",
+      "title": "Envío Gratis",
+      "subtitle": "En compras mayores a $99. Válido solo por tiempo limitado.",
+      "imageUrl": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200",
+      "bgColor": "from-emerald-500 to-teal-600",
+      "accentColor": "bg-white text-emerald-600",
+      "ctaText": "Comprar ahora"
+    },
+    {
+      "id": "4",
+      "title": "2x1 en Sudaderas",
+      "subtitle": "Lleva dos sudaderas por el precio de una esta semana.",
+      "imageUrl": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1200",
+      "bgColor": "from-amber-500 to-orange-600",
+      "accentColor": "bg-white text-amber-600",
+      "ctaText": "Aprovechar"
+    }
+  ]
+}

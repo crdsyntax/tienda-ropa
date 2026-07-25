@@ -40,8 +40,8 @@ export function Header() {
         {/* Row 1: Logo + Search */}
         <div className="flex items-center gap-4 h-16">
           <a href="/" className="flex flex-col items-center shrink-0">
-            <img src={sinfondo} alt="TiendaRopa" className="w-12 h-12 object-cover" style={{ borderRadius: '100%' }} />
-            <span className="text-[10px] font-bold text-slate-900 leading-none hidden sm:block">TiendaRopa</span>
+            <img src={sinfondo} alt="CottonShop" className="w-12 h-12 object-cover" style={{ borderRadius: '100%' }} />
+            <span className="text-[10px] font-bold text-slate-900 leading-none hidden sm:block">CottonShop</span>
           </a>
 
           <div className="flex-1 max-w-2xl hidden sm:block">

@@ -1,19 +1,20 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { Product, OrderInfo } from '../types';
+import type { CatalogProduct } from '../types/catalog';
+import type { OrderInfo } from '../types';
 import { STORE_ADDRESS } from '../types';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const CART_TTL = 24 * 60 * 60 * 1000;
 
 export interface CartItem {
-  product: Product;
+  product: CatalogProduct;
   quantity: number;
   size: string;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, size: string) => void;
+  addItem: (product: CatalogProduct, size: string) => void;
   removeItem: (productId: string, size: string) => void;
   updateQuantity: (productId: string, size: string, quantity: number) => void;
   totalItems: number;
@@ -42,7 +43,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [orderInfo, setOrderInfoState] = useState<OrderInfo>(initialOrder);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addItem = useCallback((product: Product, size: string) => {
+  const addItem = useCallback((product: CatalogProduct, size: string) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id && i.size === size);
       if (existing) {

@@ -19,6 +19,8 @@ export interface Product {
   inStock: boolean;
 }
 
+export type { CatalogProduct } from './catalog';
+
 export interface Brand {
   id: string;
   name: string;

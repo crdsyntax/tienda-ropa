@@ -9,7 +9,7 @@ interface ImageOverlayProps {
 
 export function ImageOverlay({ isOpen, onClose, src, alt }: ImageOverlayProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} contenido={
       <div className="relative w-full h-full flex items-center justify-center p-4">
         <button
           onClick={onClose}
@@ -27,6 +27,6 @@ export function ImageOverlay({ isOpen, onClose, src, alt }: ImageOverlayProps) {
           draggable={false}
         />
       </div>
-    </Modal>
+    } />
   );
 }

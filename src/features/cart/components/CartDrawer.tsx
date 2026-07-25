@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCart } from '../../../context/CartContext';
 import { STORE_ADDRESS } from '../../../types';
+import { ProductImage } from '../../../components/ui/ProductImage';
 
 export function CartDrawer() {
   const {
@@ -117,13 +118,13 @@ export function CartDrawer() {
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {items.map((item) => (
                 <div key={`${item.product.id}-${item.size}`} className="flex gap-3 bg-slate-50 rounded-xl p-3">
-                  <img
-                    src={item.product.images[0]?.url}
-                    alt={item.product.title}
+                  <ProductImage
+                    src={item.product.images[0] || ''}
+                    alt={item.product.name}
                     className="w-16 h-20 object-cover rounded-lg flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-slate-900 truncate">{item.product.title}</h4>
+                    <h4 className="text-sm font-semibold text-slate-900 truncate">{item.product.name}</h4>
                     <p className="text-xs text-slate-400">Talla: {item.size}</p>
                     <p className="text-sm font-bold text-slate-900 mt-1">${item.product.price.toFixed(2)}</p>
 
@@ -262,7 +263,7 @@ export function CartDrawer() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">TiendaRopa - Sede Principal</p>
+                      <p className="text-sm font-semibold text-slate-900">CottonShop - Sede Principal</p>
                       <p className="text-sm text-slate-500 mt-0.5">{STORE_ADDRESS}</p>
                       <p className="text-xs text-slate-400 mt-1">Horario: Lun-Sáb 10:00 - 20:00</p>
                     </div>

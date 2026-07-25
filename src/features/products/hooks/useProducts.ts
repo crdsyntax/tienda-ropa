@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Product } from '../../../types';
+import type { CatalogProduct } from '../../../types/catalog';
 import { productsService } from '../services/productsService';
 
 interface UseProductsReturn {
-  products: Product[];
+  products: CatalogProduct[];
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
 }
 
 export function useProducts(): UseProductsReturn {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,13 +35,13 @@ export function useProducts(): UseProductsReturn {
 }
 
 interface UseProductDetailReturn {
-  product: Product | null;
+  product: CatalogProduct | null;
   loading: boolean;
   error: string | null;
 }
 
 export function useProductDetail(id: string): UseProductDetailReturn {
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<CatalogProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

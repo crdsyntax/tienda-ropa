@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logoIco.png'],
       manifest: {
-        name: 'Tienda de Ropa Virtual',
-        short_name: 'TiendaRopa',
-        description: 'Tienda de ropa virtual - Moda femenina y masculina',
+        name: 'CottonShop',
+        short_name: 'CottonShop',
+        description: 'CottonShop - Moda femenina y masculina',
         theme_color: '#0f172a',
         background_color: '#ffffff',
         display: 'standalone',

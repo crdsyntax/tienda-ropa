@@ -1,4 +1,4 @@
-# CONTEXT.md - TiendaRopa
+# CONTEXT.md - CottonShop
 
 > Fuente única de verdad del proyecto. Lee este archivo antes de cualquier sesión de trabajo.
 
@@ -6,7 +6,7 @@
 
 ## 1. Visión General del Proyecto
 
-**Propósito del negocio:** Tienda de ropa virtual enfocada en moda femenina y masculina. La aplicación permite a los usuarios explorar un catálogo de productos, ver promociones, agregar productos al carrito con selección de talla y realizar pedidos con envío o recogida en tienda física.
+**Propósito del negocio:** Tienda de ropa virtual CottonShop enfocada en moda femenina y masculina. La aplicación permite a los usuarios explorar un catálogo de productos, ver promociones, agregar productos al carrito con selección de talla y realizar pedidos con envío o recogida en tienda física.
 
 **Objetivos técnicos principales:**
 - PWA instalable con experiencia nativa (standalone, portrait).
@@ -37,7 +37,7 @@
 ### Estructura de directorios
 
 ```
-tienda-ropa/
+cottonshop/
 ├── public/
 │   ├── favicon.svg
 │   ├── icons.svg

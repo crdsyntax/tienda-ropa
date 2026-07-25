@@ -1,30 +1,26 @@
 import { useState, useCallback } from 'react';
-import type { Product } from '../../../types';
+import type { CatalogProduct } from '../../../types/catalog';
 import { Carousel, type CarouselImage } from '../../../components/ui/Carousel';
-import { ImageOverlay } from '../../../components/ui/ImageOverlay';
+import { ProductImage } from '../../../components/ui/ProductImage';
 import { useCart } from '../../../context/CartContext';
 
 interface ProductCardProps {
-  product: Product;
+  product: CatalogProduct;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [overlayOpen, setOverlayOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<CarouselImage | null>(null);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] ?? '');
   const [addedFeedback, setAddedFeedback] = useState(false);
   const { addItem } = useCart();
 
-  const carouselImages: CarouselImage[] = product.images.slice(0, 5);
+  const carouselImages: CarouselImage[] = product.images.slice(0, 5).map((url, i) => ({
+    id: `${product.id}-img-${i}`,
+    url,
+    alt: `${product.name} - Imagen ${i + 1}`,
+  }));
 
   const handleExpand = useCallback((image: CarouselImage) => {
-    setSelectedImage(image);
-    setOverlayOpen(true);
-  }, []);
-
-  const handleCloseOverlay = useCallback(() => {
-    setOverlayOpen(false);
-    setSelectedImage(null);
+    console.log('Expand image:', image.url);
   }, []);
 
   const handleAddToCart = useCallback(() => {
@@ -34,10 +30,12 @@ export function ProductCard({ product }: ProductCardProps) {
     setTimeout(() => setAddedFeedback(false), 1500);
   }, [addItem, product, selectedSize]);
 
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+  const hasDiscount = product.originalPrice != null && product.originalPrice > product.price;
   const discount = hasDiscount
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0;
+
+  const inStock = product.stock > 0;
 
   return (
     <>
@@ -45,15 +43,14 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="relative">
           <Carousel
             images={carouselImages}
-            renderItem={(image, index) => (
+            renderItem={(image) => (
               <div className="relative aspect-[3/4] bg-slate-100">
-                <img
-                  src={image.url}
-                  alt={image.alt}
-                  className="w-full h-full object-cover select-none"
-                  draggable={false}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                />
+                  <ProductImage
+                    src={image.url}
+                    alt={image.alt}
+                    className="w-full h-full object-cover select-none"
+                    draggable={false}
+                  />
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -82,7 +79,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.brand}
           </p>
           <h3 className="text-base font-semibold text-slate-900 leading-tight mb-1 line-clamp-2">
-            {product.title}
+            {product.name}
           </h3>
           <p className="text-sm text-slate-500 leading-relaxed mb-3 line-clamp-2">
             {product.description}
@@ -120,11 +117,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <button
             onClick={handleAddToCart}
-            disabled={!product.inStock}
+            disabled={!inStock}
             className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
               addedFeedback
                 ? 'bg-emerald-500 text-white'
-                : product.inStock
+                : inStock
                   ? 'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-700'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
@@ -136,7 +133,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 </svg>
                 Agregado
               </span>
-            ) : !product.inStock ? (
+            ) : !inStock ? (
               'Agotado'
             ) : (
               <span className="inline-flex items-center gap-1.5">
@@ -149,15 +146,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </button>
         </div>
       </article>
-
-      {selectedImage && (
-        <ImageOverlay
-          isOpen={overlayOpen}
-          onClose={handleCloseOverlay}
-          src={selectedImage.url.replace('w=600', 'w=1200')}
-          alt={selectedImage.alt}
-        />
-      )}
     </>
   );
 }

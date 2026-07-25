@@ -13,8 +13,8 @@ export function Footer() {
 
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src={logoIco} alt="TiendaRopa" className="w-10 h-10 rounded-xl" />
-              <span className="text-xl font-bold tracking-tight">TiendaRopa</span>
+              <img src={logoIco} alt="CottonShop" className="w-10 h-10 rounded-xl" />
+              <span className="text-xl font-bold tracking-tight">CottonShop</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
               Moda contemporánea para quienes buscan estilo, comodidad y calidad en cada prenda.
@@ -122,7 +122,7 @@ export function Footer() {
 
         <div className="border-t border-slate-800 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} TiendaRopa. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} CottonShop. Todos los derechos reservados.
           </p>
           <div className="flex gap-4 text-xs text-slate-500">
             <a href="#" className="hover:text-slate-300 transition-colors">Privacidad</a>
