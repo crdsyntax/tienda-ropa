@@ -1,10 +1,11 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
-import { Search, Plus, Edit2, Trash2, X, ChevronDown, Upload } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, X, ChevronDown, Upload, FileSpreadsheet } from 'lucide-react';
 import type { BackofficeProduct } from '../types';
 import { SIZES, CATEGORIES } from '../constants';
 import { Modal, StatusBadge, StockBar, EmptyState, notify } from '../components';
 import { imageStore, isIdbUrl } from '../../../services/imageStore';
 import { ProductImage } from '../../../components/ui/ProductImage';
+import { exportRowsToExcel, type ExcelColumn } from '../../../services/excelExport';
 
 interface ProductsSectionProps {
   products: BackofficeProduct[];
@@ -99,6 +100,37 @@ export function ProductsSection({ products, onSave, onDelete }: ProductsSectionP
     }));
   }, []);
 
+  const handleExport = useCallback(() => {
+    const columns: ExcelColumn[] = [
+      { header: 'ID', key: 'id' },
+      { header: 'Nombre', key: 'name' },
+      { header: 'SKU', key: 'sku' },
+      { header: 'Categoría', key: 'category' },
+      { header: 'Marca', key: 'brand' },
+      { header: 'Precio', key: 'price' },
+      { header: 'Precio Original', key: 'originalPrice' },
+      { header: 'Stock', key: 'stock' },
+      { header: 'Estado', key: 'status' },
+      { header: 'Tallas', key: 'sizes' },
+      { header: 'Colores', key: 'colors' },
+    ];
+    const rows = filtered.map((p) => ({
+      id: p.id,
+      name: p.name,
+      sku: p.sku,
+      category: p.category,
+      brand: p.brand,
+      price: p.price,
+      originalPrice: p.originalPrice ?? '',
+      stock: p.stock,
+      status: p.status,
+      sizes: p.sizes.join(', '),
+      colors: p.colors.join(', '),
+    }));
+    exportRowsToExcel(columns, rows, 'Productos', `productos-${Date.now()}.xlsx`);
+    notify(`Exportados ${rows.length} productos a Excel`);
+  }, [filtered]);
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -106,10 +138,20 @@ export function ProductsSection({ products, onSave, onDelete }: ProductsSectionP
           <h1 className="text-2xl font-bold text-slate-900">Productos</h1>
           <p className="text-sm text-slate-500 mt-0.5">{products.length} productos registrados</p>
         </div>
-        <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-all active:scale-[0.98] cursor-pointer shadow-sm">
-          <Plus size={16} />
-          Nuevo Producto
-        </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            onClick={handleExport}
+            disabled={filtered.length === 0}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <FileSpreadsheet size={16} />
+            Exportar Excel
+          </button>
+          <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-all active:scale-[0.98] cursor-pointer shadow-sm">
+            <Plus size={16} />
+            Nuevo Producto
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">

@@ -1,17 +1,39 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCart } from '../../../context/CartContext';
+import { useOrders } from '../../../context/OrdersContext';
+import { useMerchantPayment } from '../../../context/MerchantPaymentContext';
 import { STORE_ADDRESS } from '../../../types';
+import type { PaymentMethodId, PaymentFieldDef } from '../../../types/payment';
+import { PAYMENT_METHODS, getMethodDef } from '../../../types/payment';
 import { ProductImage } from '../../../components/ui/ProductImage';
 
 export function CartDrawer() {
   const {
     items, removeItem, updateQuantity, totalItems, totalPrice,
-    orderInfo, setOrderInfo,
+    orderInfo, setOrderInfo, getDeliveryAddress,
     isCartOpen, closeCart, clearCart,
   } = useCart();
+  const { registerOrder } = useOrders();
+  const { settings } = useMerchantPayment();
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placedOrderId, setPlacedOrderId] = useState('');
+
+  const availableMethods = PAYMENT_METHODS.filter((m) => settings.enabledMethods[m.id]);
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>(() => availableMethods[0]?.id ?? 'cash');
+  const [paymentUserData, setPaymentUserData] = useState<Record<string, string>>({});
+  const selectedDef = getMethodDef(selectedMethod);
+
+  useEffect(() => {
+    if (availableMethods.length > 0 && !availableMethods.some((m) => m.id === selectedMethod)) {
+      setSelectedMethod(availableMethods[0].id);
+      setPaymentUserData({});
+    }
+  }, [availableMethods, selectedMethod]);
+
+  const isPaymentValid = availableMethods.length > 0
+    && selectedDef.userFields.every((f) => (paymentUserData[f.key] ?? '').trim() !== '');
 
   useEffect(() => {
     if (isCartOpen) {
@@ -33,12 +55,44 @@ export function CartDrawer() {
   const isFormValid = orderInfo.name.trim() !== ''
     && orderInfo.phone.trim() !== ''
     && orderInfo.email.trim() !== ''
-    && (orderInfo.deliveryMode === 'pickup' || orderInfo.address.trim() !== '');
+    && (orderInfo.deliveryMode === 'pickup' || orderInfo.address.trim() !== '')
+    && isPaymentValid;
 
   const handlePlaceOrder = useCallback(() => {
     if (!isFormValid) return;
+    const order = registerOrder({
+      customer: orderInfo.name,
+      customerEmail: orderInfo.email,
+      customerPhone: orderInfo.phone,
+      total: totalPrice,
+      items: items.map((item) => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        productImage: item.product.images[0] || '',
+        size: item.size,
+        quantity: item.quantity,
+        price: item.product.price,
+      })),
+      paymentMethod: selectedDef.label,
+      payment: {
+        methodId: selectedMethod,
+        methodLabel: selectedDef.label,
+        userData: paymentUserData,
+      },
+      address: getDeliveryAddress(),
+    });
+    setPlacedOrderId(order.id);
     setOrderPlaced(true);
-  }, [isFormValid]);
+  }, [isFormValid, registerOrder, orderInfo, totalPrice, items, selectedDef, selectedMethod, paymentUserData, getDeliveryAddress]);
+
+  const handleSelectMethod = useCallback((id: PaymentMethodId) => {
+    setSelectedMethod(id);
+    setPaymentUserData({});
+  }, []);
+
+  const handlePayField = useCallback((field: PaymentFieldDef, value: string) => {
+    setPaymentUserData((prev) => ({ ...prev, [field.key]: value }));
+  }, []);
 
   const handleClose = useCallback(() => {
     closeCart();
@@ -58,13 +112,13 @@ export function CartDrawer() {
   if (!isCartOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end lg:justify-center lg:items-center">
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={handleClose}
       />
 
-      <div className="relative z-10 w-full max-w-md bg-white h-full flex flex-col shadow-2xl animate-slide-in">
+      <div className="relative z-10 w-full max-w-md lg:max-w-2xl bg-white h-full lg:h-auto lg:max-h-[90vh] flex flex-col shadow-2xl animate-slide-in lg:rounded-2xl">
         <div className="flex items-center justify-between p-4 border-b border-slate-200">
           <h2 className="text-lg font-bold text-slate-900">
             {showCheckout ? 'Finalizar pedido' : `Carrito (${totalItems})`}
@@ -88,6 +142,7 @@ export function CartDrawer() {
               </svg>
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Pedido realizado</h3>
+            <p className="text-sm font-semibold text-emerald-600 mb-1">ID: {placedOrderId}</p>
             <p className="text-slate-500 mb-1">Gracias, {orderInfo.name}.</p>
             <p className="text-sm text-slate-400 mb-6">
               {orderInfo.deliveryMode === 'delivery'
@@ -267,6 +322,68 @@ export function CartDrawer() {
                       <p className="text-sm text-slate-500 mt-0.5">{STORE_ADDRESS}</p>
                       <p className="text-xs text-slate-400 mt-1">Horario: Lun-Sáb 10:00 - 20:00</p>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Método de pago *</label>
+                {availableMethods.length === 0 ? (
+                  <p className="text-xs text-slate-400 bg-slate-50 rounded-xl p-3 border border-slate-200">
+                    No hay métodos de pago habilitados por el momento.
+                  </p>
+                ) : (
+                  <select
+                    value={selectedMethod}
+                    onChange={(e) => handleSelectMethod(e.target.value as PaymentMethodId)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer"
+                  >
+                    {availableMethods.map((method) => (
+                      <option key={method.id} value={method.id}>
+                        {method.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {availableMethods.length > 0 && selectedDef.merchantFields.length > 0 && (
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Datos de pago del comerciante</h4>
+                  <dl className="space-y-1.5 text-sm">
+                    {selectedDef.merchantFields
+                      .filter((f) => (settings.data[selectedMethod]?.[f.key] ?? '').trim() !== '')
+                      .map((f) => (
+                        <div key={f.key} className="flex justify-between gap-2">
+                          <dt className="text-slate-500">{f.label}</dt>
+                          <dd className="font-medium text-slate-900 text-right">{settings.data[selectedMethod]?.[f.key]}</dd>
+                        </div>
+                      ))}
+                  </dl>
+                  {!selectedDef.merchantFields.some((f) => (settings.data[selectedMethod]?.[f.key] ?? '').trim() !== '') && (
+                    <p className="text-xs text-slate-400">El comerciante no ha registrado los datos de este método aún.</p>
+                  )}
+                </div>
+              )}
+
+              {availableMethods.length > 0 && selectedDef.userFields.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Registro de pago *</label>
+                  <div className="space-y-4">
+                    {selectedDef.userFields.map((field) => (
+                      <div key={field.key}>
+                        <label className="text-sm font-medium text-slate-700 mb-1 block">
+                          {field.label} *
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentUserData[field.key] ?? ''}
+                          onChange={(e) => handlePayField(field, e.target.value)}
+                          placeholder={field.placeholder}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

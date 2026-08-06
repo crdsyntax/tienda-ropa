@@ -1,22 +1,68 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Search, X, Store } from 'lucide-react';
-import type { Order } from '../types';
+import { Search, X, Store, FileSpreadsheet, ChevronDown } from 'lucide-react';
+import type { Order, OrderStatus } from '../types';
 import { Modal, StatusBadge, EmptyState, OrderTimeline, notify } from '../components';
+import { exportRowsToExcel, type ExcelColumn } from '../../../services/excelExport';
 
 interface OrdersSectionProps {
   orders: Order[];
   onUpdateStatus: (orderId: string, newStatus: Order['status']) => void;
 }
 
+const STATUS_FILTERS: { value: OrderStatus | 'all'; label: string }[] = [
+  { value: 'all', label: 'Todos los estados' },
+  { value: 'pending', label: 'Pendientes' },
+  { value: 'shipped', label: 'Enviados' },
+  { value: 'delivered', label: 'Entregados' },
+  { value: 'cancelled', label: 'Cancelados' },
+];
+
 export function OrdersSection({ orders, onUpdateStatus }: OrdersSectionProps) {
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return orders;
-    const q = search.toLowerCase();
-    return orders.filter((o) => o.id.toLowerCase().includes(q) || o.customer.toLowerCase().includes(q));
-  }, [orders, search]);
+    let result = orders;
+    if (statusFilter !== 'all') {
+      result = result.filter((o) => o.status === statusFilter);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter((o) => o.id.toLowerCase().includes(q) || o.customer.toLowerCase().includes(q));
+    }
+    return result;
+  }, [orders, search, statusFilter]);
+
+  const handleExport = useCallback(() => {
+    const columns: ExcelColumn[] = [
+      { header: 'ID', key: 'id' },
+      { header: 'Cliente', key: 'customer' },
+      { header: 'Email', key: 'customerEmail' },
+      { header: 'Teléfono', key: 'customerPhone' },
+      { header: 'Fecha', key: 'date' },
+      { header: 'Estado', key: 'status' },
+      { header: 'Método de Pago', key: 'paymentMethod' },
+      { header: 'Total', key: 'total' },
+      { header: 'Dirección', key: 'address' },
+      { header: 'Artículos', key: 'itemsSummary' },
+    ];
+    const rows = filtered.map((o) => ({
+      id: o.id,
+      customer: o.customer,
+      customerEmail: o.customerEmail,
+      customerPhone: o.customerPhone,
+      date: new Date(o.date).toLocaleDateString('es-MX'),
+      status: o.status,
+      paymentMethod: o.paymentMethod,
+      total: o.total,
+      address: o.address,
+      itemsSummary: o.items.map((i) => `${i.productName} (${i.size}) x${i.quantity}`).join('; '),
+    }));
+    const label = statusFilter === 'all' ? 'todos' : statusFilter;
+    exportRowsToExcel(columns, rows, 'Pedidos', `pedidos-${label}-${Date.now()}.xlsx`);
+    notify(`Exportados ${rows.length} pedidos a Excel`);
+  }, [filtered, statusFilter]);
 
   const statusFlow = useCallback((current: Order['status']): Order['status'][] => {
     const flow: Order['status'][] = [];
@@ -39,20 +85,42 @@ export function OrdersSection({ orders, onUpdateStatus }: OrdersSectionProps) {
           <h1 className="text-2xl font-bold text-slate-900">Ventas y Pedidos</h1>
           <p className="text-sm text-slate-500 mt-0.5">{orders.length} pedidos registrados</p>
         </div>
-        <div className="relative w-full sm:w-auto">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Buscar por ID o cliente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full sm:w-64 pl-9 pr-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent"
-          />
-          {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
-              <X size={14} />
-            </button>
-          )}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Buscar por ID o cliente..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:w-56 pl-9 pr-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+            />
+            {search && (
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
+              className="w-full sm:w-40 pl-4 pr-9 py-2.5 text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-slate-400 appearance-none cursor-pointer"
+            >
+              {STATUS_FILTERS.map((f) => (
+                <option key={f.value} value={f.value}>{f.label}</option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          </div>
+          <button
+            onClick={handleExport}
+            disabled={filtered.length === 0}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <FileSpreadsheet size={16} />
+            Exportar Excel
+          </button>
         </div>
       </div>
 
@@ -117,6 +185,16 @@ export function OrdersSection({ orders, onUpdateStatus }: OrdersSectionProps) {
               <div className="bg-slate-50 rounded-2xl p-4">
                 <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Método de Pago</h3>
                 <p className="text-sm font-semibold text-slate-900">{detailOrder.paymentMethod}</p>
+                {detailOrder.payment && Object.keys(detailOrder.payment.userData).length > 0 && (
+                  <dl className="mt-3 space-y-1.5 text-xs">
+                    {Object.entries(detailOrder.payment.userData).map(([key, value]) => (
+                      <div key={key} className="flex justify-between gap-2">
+                        <dt className="text-slate-400 capitalize">{key}</dt>
+                        <dd className="font-medium text-slate-700 text-right">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
                 <p className="text-xs text-slate-400 mt-2">Total: <span className="font-semibold text-slate-900 text-sm">${detailOrder.total.toFixed(2)}</span></p>
               </div>
             </div>

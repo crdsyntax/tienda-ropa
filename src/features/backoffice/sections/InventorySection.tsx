@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
-import { Minus, Plus, AlertTriangle } from 'lucide-react';
+import { Minus, Plus, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import type { BackofficeProduct } from '../types';
 import { StockBar, notify } from '../components';
 import { ProductImage } from '../../../components/ui/ProductImage';
+import { exportRowsToExcel, type ExcelColumn } from '../../../services/excelExport';
 
 interface InventorySectionProps {
   products: BackofficeProduct[];
@@ -28,9 +29,30 @@ export function InventorySection({ products, onUpdateStock }: InventorySectionPr
 
   const criticalCount = products.filter((p) => p.stock <= 5 && p.status === 'active').length;
 
+  const handleExport = useCallback(() => {
+    const columns: ExcelColumn[] = [
+      { header: 'ID', key: 'id' },
+      { header: 'Producto', key: 'name' },
+      { header: 'SKU', key: 'sku' },
+      { header: 'Categoría', key: 'category' },
+      { header: 'Stock', key: 'stock' },
+      { header: 'Estado', key: 'status' },
+    ];
+    const rows = products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      sku: p.sku,
+      category: p.category,
+      stock: p.stock,
+      status: p.status,
+    }));
+    exportRowsToExcel(columns, rows, 'Inventario', `inventario-${Date.now()}.xlsx`);
+    notify(`Exportados ${rows.length} productos a Excel`);
+  }, [products]);
+
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Control de Inventario</h1>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -42,6 +64,14 @@ export function InventorySection({ products, onUpdateStock }: InventorySectionPr
             ) : 'Todos los productos tienen stock suficiente'}
           </p>
         </div>
+        <button
+          onClick={handleExport}
+          disabled={products.length === 0}
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <FileSpreadsheet size={16} />
+          Exportar Excel
+        </button>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">

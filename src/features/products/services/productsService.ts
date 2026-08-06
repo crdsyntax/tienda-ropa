@@ -9,6 +9,7 @@ interface CatalogDataFile {
 }
 
 const STORAGE_KEY = 'cottonshop_products';
+const PROMOS_STORAGE_KEY = 'cottonshop_promos';
 
 async function fetchFromJson(): Promise<CatalogDataFile> {
   const res = await fetch('/data/productos.json');
@@ -21,6 +22,16 @@ async function fetchFromJson(): Promise<CatalogDataFile> {
 function loadLocalProducts(): CatalogProduct[] | null {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+function loadLocalPromos(): PromoSlide[] | null {
+  try {
+    const stored = localStorage.getItem(PROMOS_STORAGE_KEY);
     if (stored) return JSON.parse(stored);
   } catch {
     /* ignore */
@@ -51,6 +62,8 @@ export const productsService = {
   },
 
   async getPromos(): Promise<PromoSlide[]> {
+    const local = loadLocalPromos();
+    if (local) return local;
     const data = await fetchFromJson();
     return data.promos;
   },

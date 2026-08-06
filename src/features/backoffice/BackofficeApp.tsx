@@ -1,14 +1,19 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Menu, X, Loader2 } from 'lucide-react';
+import type { PromoSlide } from '../../types';
 import type { BackofficeProduct, Order, Section } from './types';
 import { NAV_ITEMS } from './constants';
-import { MOCK_PRODUCTS, MOCK_ORDERS } from './mockData';
+import { MOCK_PRODUCTS } from './mockData';
+import { useOrders } from '../../context/OrdersContext';
+import { useMerchantPayment } from '../../context/MerchantPaymentContext';
 import { ToastContainer } from './components';
 import {
   DashboardSection,
   ProductsSection,
   InventorySection,
   OrdersSection,
+  PromosSection,
+  PaymentSection,
 } from './sections';
 
 const STORAGE_KEY = 'cottonshop_products';
@@ -31,7 +36,9 @@ export function BackofficeApp() {
   const [loading, setLoading] = useState(true);
 
   const [productsState, setProductsState] = useState<BackofficeProduct[]>([]);
-  const [ordersState] = useState<Order[]>(MOCK_ORDERS);
+  const { orders, updateOrderStatus } = useOrders();
+  const { settings: payment, setSettings: setPayment } = useMerchantPayment();
+  const [initialPromos, setInitialPromos] = useState<PromoSlide[]>([]);
 
   useEffect(() => {
     const local = loadInitialProducts();
@@ -45,8 +52,9 @@ export function BackofficeApp() {
       .then((data) => {
         if (data?.products) {
           setProductsState(data.products);
-        } else {
-          setProductsState(MOCK_PRODUCTS);
+        }
+        if (data?.promos) {
+          setInitialPromos(data.promos);
         }
       })
       .catch(() => setProductsState(MOCK_PRODUCTS))
@@ -79,20 +87,24 @@ export function BackofficeApp() {
     setProductsState((prev) => prev.map((p) => (p.id === id ? { ...p, stock: newStock } : p)));
   }, []);
 
-  const handleUpdateStatus = useCallback((_orderId: string, _newStatus: Order['status']) => {
-    // orders are static for now
-  }, []);
+  const handleUpdateStatus = useCallback((orderId: string, newStatus: Order['status']) => {
+    updateOrderStatus(orderId, newStatus);
+  }, [updateOrderStatus]);
 
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <DashboardSection products={productsState} orders={ordersState} />;
+        return <DashboardSection products={productsState} orders={orders} />;
       case 'products':
         return <ProductsSection products={productsState} onSave={handleSaveProduct} onDelete={handleDeleteProduct} />;
       case 'inventory':
         return <InventorySection products={productsState} onUpdateStock={handleUpdateStock} />;
       case 'orders':
-        return <OrdersSection orders={ordersState} onUpdateStatus={handleUpdateStatus} />;
+        return <OrdersSection orders={orders} onUpdateStatus={handleUpdateStatus} />;
+      case 'promos':
+        return <PromosSection initialPromos={initialPromos} />;
+      case 'payment':
+        return <PaymentSection payment={payment} onSave={setPayment} />;
       default:
         return null;
     }

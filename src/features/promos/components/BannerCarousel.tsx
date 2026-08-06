@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { PromoSlide } from '../../../types';
 import { productsService } from '../../products/services/productsService';
+import { ProductImage } from '../../../components/ui/ProductImage';
 
 interface BannerCarouselProps {
   onCtaClick?: () => void;
@@ -58,8 +59,8 @@ export function BannerCarousel({ onCtaClick }: BannerCarouselProps) {
               {slide.ctaText}
             </button>
           </div>
-          <div className="hidden sm:block w-48 h-48 lg:w-56 lg:h-56 rounded-full bg-white/10 backdrop-blur-sm overflow-hidden shrink-0">
-            <img
+          <div className="flex items-center justify-center w-24 h-24 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full bg-white/10 backdrop-blur-sm overflow-hidden shrink-0">
+            <ProductImage
               src={slide.imageUrl}
               alt={slide.title}
               className="w-full h-full object-cover opacity-90"

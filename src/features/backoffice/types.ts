@@ -1,27 +1,8 @@
 import type { CatalogProduct } from '../../types/catalog';
+import type { Order, OrderItem, OrderStatus } from '../../types/order';
 
 export type BackofficeProduct = CatalogProduct;
 
-export interface OrderItem {
-  productId: string;
-  productName: string;
-  productImage: string;
-  size: string;
-  quantity: number;
-  price: number;
-}
+export type { Order, OrderItem, OrderStatus };
 
-export interface Order {
-  id: string;
-  customer: string;
-  customerEmail: string;
-  customerPhone: string;
-  date: string;
-  total: number;
-  status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
-  items: OrderItem[];
-  paymentMethod: string;
-  address: string;
-}
-
-export type Section = 'dashboard' | 'products' | 'inventory' | 'orders';
+export type Section = 'dashboard' | 'products' | 'inventory' | 'orders' | 'promos' | 'payment';

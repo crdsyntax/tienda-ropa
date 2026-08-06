@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { LayoutDashboard, Package, Warehouse, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, Warehouse, ShoppingCart, Image, CreditCard } from 'lucide-react';
 import type { Section } from './types';
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
@@ -19,6 +19,8 @@ export const NAV_ITEMS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'products', label: 'Productos', icon: <Package size={18} /> },
   { id: 'inventory', label: 'Inventario', icon: <Warehouse size={18} /> },
   { id: 'orders', label: 'Pedidos', icon: <ShoppingCart size={18} /> },
+  { id: 'promos', label: 'Banners', icon: <Image size={18} /> },
+  { id: 'payment', label: 'Datos de Pago', icon: <CreditCard size={18} /> },
 ];
 
 export const STATUS_STYLES: Record<string, string> = {
